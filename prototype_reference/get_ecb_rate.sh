@@ -23,8 +23,6 @@ read_dom () {
   TAG_NAME=${ENTITY%% *}
   ATTRIBUTES=${ENTITY#* }
   ATTRIBUTES=${ATTRIBUTES%/}
-  #target=
-
   return $RET
 }
 
@@ -32,10 +30,7 @@ syncDate="2016-08-08"
 
 parse_dom () {
   if [[ $TAG_NAME = "Cube" ]] ; then
-    #echo $ATTRIBUTES
-
     eval local $ATTRIBUTES
-    #echo "$time"
     if [[ $time ]]; then
       if [[ ! "$time" == "$syncDate" ]]; then
         echo "no data for $syncDate"
@@ -50,14 +45,9 @@ parse_dom () {
 if online; then
   response=$(request "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml")
   if [ $? -eq 0 ]; then
-    #check=$(head -n 1 <<< "$response")
-    #dataDate=$(cut -d " " -f 1 <<< $check)
-    #dataId=$(cut -d "#" -f 2 <<< $check)
-
     while read_dom; do
       parse_dom
     done  <<< "$response"
-
     exit 0
   else
     echo "network unreachable, bailing out"

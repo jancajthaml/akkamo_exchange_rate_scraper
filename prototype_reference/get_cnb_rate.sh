@@ -16,6 +16,8 @@ request() {
   fi
 }
 
+calc() { awk "BEGIN{print $*}"; }
+
 syncDate="08.08.2016"
 
 if online; then
@@ -29,7 +31,16 @@ if online; then
       echo "no data for $syncDate"
       exit 1
     fi
-    echo "$response"
+
+    while IFS='' read -r LINE || [[ -n "$LINE" ]]; do
+      AMOUNT=$(cut -d "|" -f 3 <<< $LINE)
+      CURRENCY=$(cut -d "|" -f 4 <<< $LINE)
+      RATE=$(cut -d "|" -f 5 <<< $LINE)
+      RATE=${RATE//[,]/.}
+      INVERSE_RATE=$(lua -e "print(1/$RATE*$AMOUNT)")
+      echo "1 CZK = $INVERSE_RATE $CURRENCY"
+    done <<< "$(awk 'NR > 2' <<< "$response")"
+
     exit 0
   else
     echo "network unreachable, bailing out"
