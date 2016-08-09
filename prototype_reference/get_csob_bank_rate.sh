@@ -16,12 +16,9 @@ request() {
   fi
 }
 
-#calc() { awk "BEGIN{print $*}"; }
-
 syncDate="2016-08-09"
 
 if online; then
-  #urlEncodedDate=$(sed "s/\./\.%20/g" <<< $syncDate)
   response=$(request "https://www.csob.cz/portal/lide/produkty/kurzovni-listky/kurzovni-listek/-/date/kurzy.txt")
 
   check=$(head -n 1 <<< "$response")

@@ -8,3 +8,6 @@ updated always at 16:00 ECB (European Central Bank -> World)
 
 ECB API documentation
 https://sdw-wsrest.ecb.europa.eu/
+
+RB updates rates at ?
+CSOB updated rates at ? (probably 9:00 D-1?)
