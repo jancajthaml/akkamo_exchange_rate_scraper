@@ -16,8 +16,6 @@ request() {
   fi
 }
 
-calc() { awk "BEGIN{print $*}"; }
-
 syncDate="08.08.2016"
 
 if online; then
