@@ -11,3 +11,12 @@ https://sdw-wsrest.ecb.europa.eu/
 
 RB updates rates at ?
 CSOB updated rates at ? (probably 9:00 D-1?)
+
+
+
+FIO - has API
+RB - no API, scapping or crawling
+CSOB - probable API
+CNB - has API
+ECB - has API
+UNICREDIT - has API

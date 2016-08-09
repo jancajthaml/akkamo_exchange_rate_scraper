@@ -16,7 +16,8 @@ request() {
   fi
 }
 
-syncDate="09.08.2016"
+syncDate="09.08.2016" # wanted rates for given rate
+#2016-08-09 reference date to check response
 
 if online; then
   urlEncodedDate=$(sed "s/\./\.+/g" <<< $syncDate)
