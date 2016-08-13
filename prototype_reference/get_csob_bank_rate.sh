@@ -32,7 +32,6 @@ if online; then
   if [ $? -eq 0 ]; then
     while IFS='' read -r LINE || [[ -n "$LINE" ]]; do
       #Země;Množství;Měna;Změna;Nákup;Prodej;Střed;Nákup;Prodej;Střed
-      country=$(cut -d ";" -f 1 <<< $LINE)
       amount=$(cut -d ";" -f 2 <<< $LINE)
       currency=$(cut -d ";" -f 3 <<< $LINE)
       buy=$(cut -d ";" -f 5 <<< $LINE)
@@ -45,7 +44,6 @@ if online; then
 
       echo "1 $currency = sell: $normalizedSell CZK, buy: $normalizedBuy CZK"
 
-      
     done <<< "$(awk 'NR > 4' <<< "$response")"
     exit 0
   else

@@ -16,21 +16,44 @@ request() {
   fi
 }
 
-syncDate="2016-08-12"
+syncDate="12.8.2016"
 
 if online; then
-  response=$(request "https://www.csas.cz/banka/portlets/exchangerates/current.do?csv=1&times=&event=current&day=13&month=8&year=2016")
+  day=$(cut -d "." -f 1 <<< $syncDate)
+  month=$(cut -d "." -f 2 <<< $syncDate)
+  year=$(cut -d "." -f 3 <<< $syncDate)
 
-  #check=$(head -n 1 <<< "$response")
-  #dataDate=$(cut -d " " -f 1 <<< $check)
+  day=$((day))
+  month=$((month))
+  year=$((year))
 
-  #if [[ ! "$syncDate" == "$dataDate" ]]; then
-    #echo "no data for $syncDate"
-    #exit 1
-  #fi
-
+  response=$(request "https://www.csas.cz/banka/portlets/exchangerates/current.do?csv=1&times=&event=current&day=${day}&month=${month}&year=${year}")
   if [ $? -eq 0 ]; then
-    echo "$response"
+
+    #"Platnost od:","12.8.2016" ,""," "," ","Devizy"," "," ","Valuty"," "," ","ČNB",
+    check=$(head -n 1 <<< "$response")
+    dataDate=$(awk -F"," '{print $2}' <<< $check | tr -d '"' | tr -d ' ')
+
+    if [[ ! "$syncDate" == "$dataDate" ]]; then
+      echo "no data for $syncDate"
+      exit 1
+    fi
+    #"Zemì","Jednotka","Mìna","Zmìna [%]", ,"Nákup","Prodej","Støed","Nákup","Prodej","Støed","Støed",
+    while IFS='' read -r LINE || [[ -n "$LINE" ]]; do
+      amount=$(awk -F"," '{print $2}' <<< $LINE | tr -d '"' | tr -d ' ')
+      currency=$(awk -F"," '{print $3}' <<< $LINE | tr -d '"' | tr -d ' ')
+
+      buy=$(awk -F"," '{print $6}' <<< $LINE | tr -d '"' | tr -d ' ')
+      sell=$(awk -F"," '{print $7}' <<< $LINE | tr -d '"' | tr -d ' ')
+      sell=${sell//[,]/.}
+      buy=${buy//[,]/.}
+
+      normalizedBuy=$(lua -e "print($sell/$amount)")
+      normalizedSell=$(lua -e "print($buy/$amount)")
+
+      echo "1 $currency = sell: $normalizedSell CZK, buy: $normalizedBuy CZK"
+
+    done <<< "$(awk 'NR > 2' <<< "$response")"
     exit 0
   else
     echo "network unreachable, bailing out"
