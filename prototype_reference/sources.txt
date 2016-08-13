@@ -10,9 +10,9 @@ ECB API documentation
 https://sdw-wsrest.ecb.europa.eu/
 
 RB updates rates at ?
-CSOB updated rates at ? (probably 9:00 D-1?)
+CSOB updated rates at ? (when the market opens or same as CNB)
 
-
+-----
 
 FIO - has API
 RB - no API, scapping or crawling
@@ -21,3 +21,53 @@ CNB - has API
 ECB - has API
 UNICREDIT - has some API, needs scraping for cookie and session
 KB - has API
+
+-----
+
+RB - public domain running on liferay (https://web.liferay.com/products/liferay-portal/features/enterprise-cms)
+
+---
+
+CBOS - daughter of KBC
+
+---
+
+some of exchange rates does not work historicaly. Only since for "today date"
+
+CNB
+* support historic lookup
+* has querystring for date
+
+CSOB
+* does not support historic lookup (only today when emmited)
+* no query string for date
+
+ECB
+* does not support historic lookup (only today when emmited)
+* no query string for date
+
+KB
+* support historic lookup
+* has querystring for date
+
+RAIFFEISEN
+* support historic lookup
+* has querystring for date
+
+UNICREDIT
+* does not support historic lookup (only today when emmited)
+* no query string for date
+
+
+does support history:
+- CNB
+- RB
+- KB
+
+does not support history:
+- CSOB
+- ECB
+- UNICREDIT
+
+
+---

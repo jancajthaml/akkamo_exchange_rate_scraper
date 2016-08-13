@@ -16,7 +16,7 @@ request() {
   fi
 }
 
-syncDate="2016-08-09"
+syncDate="2016-08-12"
 
 if online; then
   response=$(request "https://www.csob.cz/portal/lide/produkty/kurzovni-listky/kurzovni-listek/-/date/kurzy.txt")
