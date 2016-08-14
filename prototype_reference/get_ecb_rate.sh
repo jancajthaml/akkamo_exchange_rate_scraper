@@ -42,7 +42,11 @@ parse_dom () {
   fi
 }
 
+#last 90days -> http://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml
+#from forever -> https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist.xml
+
 if online; then
+  #check if syncDate is for today or historic here
   response=$(request "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml")
   if [ $? -eq 0 ]; then
     while read_dom; do

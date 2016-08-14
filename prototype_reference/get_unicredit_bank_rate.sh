@@ -30,6 +30,8 @@ request() {
 syncDate="2016-08-09"
 
 if online; then
+  #check if syncDate is for today or historic here
+
   # fixme somewhat cleaner and more universal, lot of hardcoding there
   cookies=$(get_cookie "https://www.unicreditbank.cz/cs/obcane.html")
   response=$(request "https://www.unicreditbank.cz/cs/exchange_rates_xml.exportxml.html" ${cookies})

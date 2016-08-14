@@ -90,8 +90,8 @@ ING Bank -> http://www.ingbank.cz/o-ing-bank/kurzovni-listek/
 
 with some API - downloadable as resource
 
-mBank -> http://www.mbank.cz/kurzovni-listek/
-Era -> https://www.erasvet.cz/informace-k-produktum/kurzovni-listek-meny
+mBank -> http://www.mbank.cz/ajax/currency/getCSV/?id=1&date=2016-08-12%2016:31:00&lang=cz
+Era -> https://www.erasvet.cz/delegate/getExchangeRates?date=12.08.2016
 OberBank -> http://www.oberbank.at/OBK_webp/OBK/Application/Rechner/CZ/Fixing/Fixing_cz_export.jsp?dat1=12.08.2016&dat2=12.08.2016&dk=on&fn=on
 
 >>>
@@ -99,3 +99,30 @@ OberBank -> http://www.oberbank.at/OBK_webp/OBK/Application/Rechner/CZ/Fixing/Fi
 no information whatsoever
 
 ČMSS -> https://www.cmss.cz
+
+----
+
+foreign exchange rate feeds
+
+http://www.floatrates.com/feeds.html
+
+
+
+---
+
+infrastructure scan
+
+UNICREDIT
+* ocsp.unicredit.eu
+
+
+----
+
+need to find historic warehouse for:
+
+ECB
+CSOB
+UNICREDIT
+
+
+

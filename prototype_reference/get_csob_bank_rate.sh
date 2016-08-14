@@ -19,17 +19,18 @@ request() {
 syncDate="2016-08-12"
 
 if online; then
+  #check if syncDate is for today or historic here
   response=$(request "https://www.csob.cz/portal/lide/produkty/kurzovni-listky/kurzovni-listek/-/date/kurzy.txt")
 
-  check=$(head -n 1 <<< "$response")
-  dataDate=$(cut -d " " -f 1 <<< $check)
-
-  if [[ ! "$syncDate" == "$dataDate" ]]; then
-    echo "no data for $syncDate"
-    exit 1
-  fi
-
   if [ $? -eq 0 ]; then
+      check=$(head -n 1 <<< "$response")
+      dataDate=$(cut -d " " -f 1 <<< $check)
+
+      if [[ ! "$syncDate" == "$dataDate" ]]; then
+        echo "no data for $syncDate"
+        exit 1
+      fi
+      
     while IFS='' read -r LINE || [[ -n "$LINE" ]]; do
       #Země;Množství;Měna;Změna;Nákup;Prodej;Střed;Nákup;Prodej;Střed
       amount=$(cut -d ";" -f 2 <<< $LINE)

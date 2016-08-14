@@ -23,9 +23,9 @@ if online; then
   month=$(cut -d "." -f 2 <<< $syncDate)
   year=$(cut -d "." -f 3 <<< $syncDate)
 
-  day=$((day))
-  month=$((month))
-  year=$((year))
+  day=${day#0}
+  month=${month#0}
+  year=${year#0}
 
   response=$(request "https://www.csas.cz/banka/portlets/exchangerates/current.do?csv=1&times=&event=current&day=${day}&month=${month}&year=${year}")
   if [ $? -eq 0 ]; then
