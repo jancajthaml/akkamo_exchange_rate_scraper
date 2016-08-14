@@ -9,6 +9,8 @@ updated always at 16:00 ECB (European Central Bank -> World)
 ECB API documentation
 https://sdw-wsrest.ecb.europa.eu/
 
+KB update rates at 18:00
+
 RB updates rates at ?
 CSOB updated rates at ? (when the market opens or same as CNB)
 
@@ -123,6 +125,7 @@ need to find historic warehouse for:
 ECB
 CSOB
 UNICREDIT
+
 
 
 
