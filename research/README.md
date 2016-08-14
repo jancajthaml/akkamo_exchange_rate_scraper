@@ -79,28 +79,28 @@ list of existing bank institutions in CZE: http://www.banky.cz/kurzy-men
 
 without any API - purely server-side rendered HTML
 
-AirBank -> https://www.airbank.cz/cs/kurzovni-listek/
-J&T Bank -> https://www.jtbanka.sk/uzitocne-informacie/kurzovy-listok/
-CityBank -> http://www.citibank.cz/czech/gcb/personal_banking/czech/static/kurzy.jsp
-EquaBank -> https://www.equabank.cz/dulezite-dokumenty/kurzovni-listek
-Zuno Bank -> https://www.zuno.cz/pomoc/uzitecne-informace/kurzovni-listek/
-PPF Bank -> https://www.ppfbanka.cz/cz/dokumenty-a-dulezite-informace/kurzovni-listek.html
-Sberbank -> https://www.sberbankcz.cz/poplatky-a-sazby/kurzy
-ING Bank -> http://www.ingbank.cz/o-ing-bank/kurzovni-listek/
+* AirBank -> https://www.airbank.cz/cs/kurzovni-listek/
+* J&T Bank -> https://www.jtbanka.sk/uzitocne-informacie/kurzovy-listok/
+* CityBank -> http://www.citibank.cz/czech/gcb/personal_banking/czech/static/kurzy.jsp
+* EquaBank -> https://www.equabank.cz/dulezite-dokumenty/kurzovni-listek
+* Zuno Bank -> https://www.zuno.cz/pomoc/uzitecne-informace/kurzovni-listek/
+* PPF Bank -> https://www.ppfbanka.cz/cz/dokumenty-a-dulezite-informace/kurzovni-listek.html
+* Sberbank -> https://www.sberbankcz.cz/poplatky-a-sazby/kurzy
+* ING Bank -> http://www.ingbank.cz/o-ing-bank/kurzovni-listek/
 
 >>>
 
 with some API - downloadable as resource
 
-mBank -> http://www.mbank.cz/ajax/currency/getCSV/?id=1&date=2016-08-12%2016:31:00&lang=cz
-Era -> https://www.erasvet.cz/delegate/getExchangeRates?date=12.08.2016
-OberBank -> http://www.oberbank.at/OBK_webp/OBK/Application/Rechner/CZ/Fixing/Fixing_cz_export.jsp?dat1=12.08.2016&dat2=12.08.2016&dk=on&fn=on
+* mBank -> http://www.mbank.cz/ajax/currency/getCSV/?id=1&date=2016-08-12%2016:31:00&lang=cz
+* Era -> https://www.erasvet.cz/delegate/getExchangeRates?date=12.08.2016
+* OberBank -> http://www.oberbank.at/OBK_webp/OBK/Application/Rechner/CZ/Fixing/Fixing_cz_export.jsp?dat1=12.08.2016&dat2=12.08.2016&dk=on&fn=on
 
 >>>
 
 no information whatsoever
 
-ČMSS -> https://www.cmss.cz
+* ČMSS -> https://www.cmss.cz
 
 ----
 
