@@ -1,10 +1,12 @@
-updated always at 14:30 CNB (Czech Republic -> World)
+reference rates:
 
-- https://www.cnb.cz/cs/financni_trhy/devizovy_trh/kurzy_devizoveho_trhu/denni_kurz.txt?date=04.08.2014
+* updated always at 14:30 CNB (Czech Republic -> World)
+** https://www.cnb.cz/cs/financni_trhy/devizovy_trh/kurzy_devizoveho_trhu/denni_kurz.txt?date=04.08.2014
 
-updated always at 16:00 ECB (European Central Bank -> World)
+* updated always at 16:00 ECB (European Central Bank -> World)
+** https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml
 
-- https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml
+---
 
 ECB API documentation
 https://sdw-wsrest.ecb.europa.eu/
@@ -130,4 +132,5 @@ UNICREDIT
 
 * use xpath to parse HTML/XML resources (http://stackoverflow.com/questions/4984689/bash-xhtml-parsing-using-xpath)
 * normalize date query
+* extract commons (online check, request without cookie, request with cookie, etc. to common.sh and use . common.sh to include)
 
