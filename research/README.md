@@ -126,6 +126,8 @@ ECB
 CSOB
 UNICREDIT
 
+-----
 
-
+* use xpath to parse HTML/XML resources (http://stackoverflow.com/questions/4984689/bash-xhtml-parsing-using-xpath)
+* normalize date query
 
