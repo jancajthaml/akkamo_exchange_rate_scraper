@@ -19,10 +19,9 @@ request() {
 syncDate="2016-8-11"
 
 if online; then
-  response=$(request "https://www.equabank.cz/dulezite-dokumenty/kurzovni-listek?d=2016-8-11")
+  response=$(request "https://www.zuno.cz/pomoc/uzitecne-informace/kurzovni-listek/")
   if [ $? -eq 0 ]; then
-      
-    currencies_table=$(tr -d '\011\012\015' <<< $response | awk -v FS="(<div id=\"currency\">|</table>)" '{print $2}' | awk -v FS="(<tbody>|</tbody>)" '{print $2}')
+    currencies_table=$(tr -d '\011\012\015' <<< $response | awk -v FS="(<table class=\"ztable irates\">|</table>)" '{print $2}')
 
     echo "<frag>${currencies_table}</frag>"
 
