@@ -2,31 +2,7 @@
 
 . common.sh
 
-read_dom () {
-  local IFS=\>
-  read -d \< ENTITY CONTENT
-  local RET=$?
-  TAG_NAME=${ENTITY%% *}
-  ATTRIBUTES=${ENTITY#* }
-  ATTRIBUTES=${ATTRIBUTES%/}
-  return $RET
-}
-
-parse_dom () {
-  if [[ $TAG_NAME = "Cube" ]] ; then
-    eval local $ATTRIBUTES
-    if [[ $time ]]; then
-      if [[ ! "$time" == "$syncDate" ]]; then
-        echo "no data for $syncDate"
-        exit 1
-      fi
-    elif [[ $currency && $rate ]]; then
-      echo "1 EUR = $rate $currency"
-    fi
-  fi
-}
-
-syncDate="2016-08-15"
+syncDate="2016-08-16"
 
 #last 90days -> http://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml
 #from forever -> https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist.xml
@@ -34,10 +10,26 @@ syncDate="2016-08-15"
 if online; then
   #check if syncDate is for today or historic here
   response=$(request "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml")
+
   if [ $? -eq 0 ]; then
-    while read_dom; do
-      parse_dom
-    done  <<< "$response"
+
+    dataDate=$(sed -n "s/.* time=\'\(.*\)\'.*/\1/p" <<< "$response")
+
+    if [[ "$syncDate" != "$dataDate" ]]; then
+      echo "no data for $syncDate"
+      exit 1
+    fi
+
+    lines=$(sed -n "s/.*<Cube currency=\'\(.*\)\' rate=\'\(.*\)\'\/>.*/\1 \2/p" <<< "$response")
+
+    while IFS='' read -r row; do
+      currencyTarget=${row%% *}
+      currencySource="EUR"
+      rate=${row##* }
+
+      echo "1 $currencySource = $rate $currencyTarget"
+    done <<< "$lines"
+
     exit 0
   else
     echo "network unreachable, bailing out"
