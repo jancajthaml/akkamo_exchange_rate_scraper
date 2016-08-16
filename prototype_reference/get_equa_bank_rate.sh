@@ -31,13 +31,16 @@ if online; then
     for ((i=0; i<${lines}; i++)); do
       row=$(xpath "(//frag/tr)[${i}]" <<< $data 2> /dev/null)
       currency=$(xpath "//tr/td[contains(@class,'cell-currency')]/span/text()" <<< $row 2> /dev/null)
-      sell=$(xpath "//tr/td[contains(@class,'cell-sell')]/text()" <<< $row 2> /dev/null)
-      buy=$(xpath "//tr/td[contains(@class,'cell-buy')]/text()" <<< $row 2> /dev/null)
 
-      sell=${sell//[,]/.}
-      buy=${buy//[,]/.}
+      if [ ! -z $currency ]; then
+        sell=$(xpath "//tr/td[contains(@class,'cell-sell')]/text()" <<< $row 2> /dev/null)
+        buy=$(xpath "//tr/td[contains(@class,'cell-buy')]/text()" <<< $row 2> /dev/null)
 
-      echo "1 $currency = sell: $sell CZK, buy: $buy CZK"
+        sell=${sell//[,]/.}
+        buy=${buy//[,]/.}
+
+        echo "1 $currency = sell: $sell CZK, buy: $buy CZK"
+      fi
     done
 
     exit 0
