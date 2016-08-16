@@ -12,8 +12,6 @@ read_dom () {
   return $RET
 }
 
-syncDate="2016-08-15"
-
 parse_dom () {
   if [[ $TAG_NAME = "Cube" ]] ; then
     eval local $ATTRIBUTES
@@ -27,6 +25,8 @@ parse_dom () {
     fi
   fi
 }
+
+syncDate="2016-08-15"
 
 #last 90days -> http://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml
 #from forever -> https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist.xml
