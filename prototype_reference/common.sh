@@ -1,10 +1,14 @@
 #!/bin/bash
 
-online() {
-  nc -z 8.8.8.8 53 >/dev/null 2>&1; [ $? -eq 0 ]
+# checks if network is up agains Google DNS
+function online {
+  nc -z 8.8.8.8 53 >/dev/null 2>&1
+  [ $? -eq 0 ]
 }
 
-request() {
+# performs HTTP GET request to $1 and append cookie if neccessary under $2
+# if response HTTP code is 200 returns response body
+function request {
   res=$([[ ! -z $2 ]] && curl --cookie "${2}" -sw "%{http_code}" $1 || curl -sw "%{http_code}" $1)
   http_code="${res:${#res}-3}"
 
@@ -16,7 +20,9 @@ request() {
   fi
 }
 
-getCookie() {
+# performs HTTP header-only GET request to $1 and retrieves http-only header
+# for cookie set
+function getCookie {
   res=$(curl -IL -sw "%{http_code}" $1)
   http_code="${res:${#res}-3}"
   if [[ "$http_code" == "200" ]]; then
@@ -27,7 +33,8 @@ getCookie() {
   fi
 }
 
-
-calculate() {
-  bc -l <<< "scale=35; $1" | sed 's/^\./0./;s/0*$//'
+# so far fastest and still precise mean to calculate something
+function calculate {
+  x=$(sed -e 's/,/./g' <<< "scale=35; $1")
+  bc -l <<< $x | sed 's/^\./0./;s/0*$//'
 }
