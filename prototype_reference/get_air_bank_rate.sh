@@ -45,7 +45,6 @@ if online; then
         
         echo "1 $currency = sell: $normalizedSell CZK, buy: $normalizedBuy CZK"
       fi
-
     done
 
     exit 0
