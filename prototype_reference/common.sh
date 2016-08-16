@@ -26,3 +26,8 @@ getCookie() {
     return 1
   fi
 }
+
+
+calculate() {
+  bc -l <<< "scale=35; $1" | sed 's/^\./0./;s/0*$//'
+}

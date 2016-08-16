@@ -15,15 +15,15 @@ if online; then
       sanitized=$(iconv -f ASCII --byte-subst='\x{%02x}' <<< $row)
       chunks=$(sed -E -e 's/.*code"><strong\>(.*)\<\/strong>.*amount">([0-9\.,]+).*buy">([0-9\.,-]+)<\/td>.*sell">([0-9\.,-]+)<\/td>.*/\1 \2 \3 \4/' -e 's/,/./g' <<< $sanitized)
 
-      currencyTarget=$(cut -d " " -f 1 <<< $chunks)
+      currencyTarget=${chunks%% *}
       currencySource="CZK"
 
-      amount=$(cut -d " " -f 2 <<< $chunks)
-      buy=$(cut -d " " -f 3 <<< $chunks | tr -cd '[[:digit:]]._-')
-      sell=$(cut -d " " -f 4 <<< $chunks | tr -cd '[[:digit:]]._-')
+      amount=$(x=${chunks#* *} && echo ${x%% *})
+      buy=$(x=${chunks#* * } && echo ${x%% *})
+      sell=${chunks##* }
 
-      normalizedBuy=$(lua -e "print($sell/$amount)")
-      normalizedSell=$(lua -e "print($buy/$amount)")
+      normalizedBuy=$(calculate "$sell / $amount")
+      normalizedSell=$(calculate "$buy / $amount")
 
       echo "1 $currencyTarget = sell: $normalizedSell $currencySource, buy: $normalizedBuy $currencySource"
     done <<< "$lines"
