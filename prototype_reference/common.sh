@@ -16,12 +16,11 @@ request() {
   fi
 }
 
-
 getCookie() {
   res=$(curl -IL -sw "%{http_code}" $1)
   http_code="${res:${#res}-3}"
   if [[ "$http_code" == "200" ]]; then
-    grep -o '^Set-Cookie: .*' <<< "${res:0:${#res}-3}"| perl -pne 's/Set-Cookie: (.*)?/$1/g' | cut -d ";" -f 1
+    pcregrep -o 'Set-Cookie: \K([^;]+)' <<< "${res:0:${#res}-3}"
     return 0
   else
     return 1

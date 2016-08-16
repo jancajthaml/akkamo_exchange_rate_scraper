@@ -8,25 +8,21 @@ if online; then
   response=$(request "https://www.zuno.cz/pomoc/uzitecne-informace/kurzovni-listek/")
   if [ $? -eq 0 ]; then
     currencies_table=$(tr -d '\011\012\015' <<< $response | awk -v FS="(<table class=\"ztable irates\">|</table>)" '{print $2}')
-    data="<frag>${currencies_table}</frag>"
+    lines=$(pcregrep -o '<tr.*?<\/tr>' <<< "<frag>${currencies_table}</frag>" | sed -e ':a' -e 'N' -e '$!ba')
 
-    #xpath is extremely slow in this case, change to sed or awk in future
-    lines=$(xpath 'count(//frag/tr)' <<< $data 2> /dev/null)
+    while IFS='' read -r row; do
+      sanitized=$(iconv -f ASCII --byte-subst='\x{%02x}' <<< $row)
+      chunks=$(sed -E -e 's/.*<td>(.*)<\/td>.*<td>(.*)<\/td>.*<td>(.*)<\/td>.*<td>(.*)<\/td>.*<td>(.*)<\/td>.*/\1 \2 \3 \5/' -e 's/,/./g' <<< $sanitized)
 
-    for ((i=1; i<${lines}; i++)); do
-      row=$(xpath "(//frag/tr)[$((i + 1))]" <<< $data 2> /dev/null)
-        
-      currencySource=$(xpath "(//tr/td[1]/text()" <<< $row 2> /dev/null)
-      currencyTarget=$(xpath "(//tr/td[2]/text()" <<< $row 2> /dev/null)
+      currencySource=$(cut -d " " -f 1 <<< $chunks)
+      currencyTarget=$(cut -d " " -f 2 <<< $chunks)
 
-      sell=$(xpath "(//tr/td[3]/text()" <<< $row 2> /dev/null | tr -cd '[[:digit:]].,_-')
-      buy=$(xpath "(//tr/td[5]/text()" <<< $row 2> /dev/null | tr -cd '[[:digit:]].,_-')
-
-      sell=${sell//[,]/.}
-      buy=${buy//[,]/.}
+      sell=$(cut -d " " -f 3 <<< $chunks | tr -cd '[[:digit:]].,_-')
+      buy=$(cut -d " " -f 4 <<< $chunks | tr -cd '[[:digit:]].,_-')
 
       echo "1 $currencySource = sell: $sell $currencyTarget, buy: $buy $currencyTarget"
-    done
+
+    done <<< "$(tail -n +2 <<< "$lines")"
 
     exit 0
   else

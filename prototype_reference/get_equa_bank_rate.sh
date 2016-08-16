@@ -8,23 +8,20 @@ if online; then
   response=$(request "https://www.equabank.cz/dulezite-dokumenty/kurzovni-listek?d=${syncDate}")
   if [ $? -eq 0 ]; then
     currencies_table=$(tr -d '\011\012\015' <<< $response | awk -v FS="(<div id=\"currency\">|</table>)" '{print $2}' | awk -v FS="(<tbody>|</tbody>)" '{print $2}')
-    data="<frag>${currencies_table}</frag>"
-    
-    #xpath is extremely slow in this case, change to sed or awk in future
-    lines=$(xpath 'count(//frag/tr)' <<< $data 2> /dev/null)
+    lines=$(pcregrep -o '<tr>.*?<\/tr>' <<< "<frag>${currencies_table}</frag>" | sed -e ':a' -e 'N' -e '$!ba')
 
-    for ((i=0; i<${lines}; i++)); do
-      row=$(xpath "(//frag/tr)[$((i + 1))]" <<< $data 2> /dev/null)
-      
-      currency=$(xpath "//tr/td[contains(@class,'cell-currency')]/span/text()" <<< $row 2> /dev/null)
-      sell=$(xpath "//tr/td[contains(@class,'cell-sell')]/text()" <<< $row 2> /dev/null | tr -cd '[[:digit:]].,_-')
-      buy=$(xpath "//tr/td[contains(@class,'cell-buy')]/text()" <<< $row 2> /dev/null | tr -cd '[[:digit:]].,_-')
+    while IFS='' read -r row; do
+      sanitized=$(iconv -f ASCII --byte-subst='\x{%02x}' <<< $row)
+      chunks=$(sed -E -e 's/.*<span>([A-Z]{3})<\/span>.*cell\-buy"> *([0-9\,]+).*cell-sell"> *([0-9,]+).*/\1 \2 \3/g' -e 's/,/./g' <<< $sanitized)
+  
+      currencyTarget=$(cut -d " " -f 1 <<< $chunks)
+      currencySource="CZK"
 
-      sell=${sell//[,]/.}
-      buy=${buy//[,]/.}
+      buy=$(cut -d " " -f 2 <<< $chunks | tr -cd '[[:digit:]]._-')
+      sell=$(cut -d " " -f 3 <<< $chunks | tr -cd '[[:digit:]]._-')
 
-      echo "1 $currency = sell: $buy CZK, buy: $sell CZK"
-    done
+      echo "1 $currencyTarget = sell: $buy $currencySource, buy: $sell $currencySource"
+    done <<< "$lines"
 
     exit 0
   else

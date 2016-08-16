@@ -8,31 +8,24 @@ if online; then
   response=$(request "https://www.airbank.cz/cs/kurzovni-listek/")
   if [ $? -eq 0 ]; then
     currencies_table=$(tr -d '\011\012\015' <<< $response | awk -v FS="(<div class='contentAjax'>|</table>)" '{print $2}' | awk -v FS="(<tbody>|</tbody>)" '{print $2}')
-    data="<frag>${currencies_table}</frag>"
+    lines=$(pcregrep -o '<tr>.*?<\/tr>' <<< "<frag>${currencies_table}</frag>" | sed -e ':a' -e 'N' -e '$!ba')
 
-    #xpath is extremely slow in this case, change to sed or awk in future
-    lines=$(xpath 'count(//frag/tr)' <<< $data 2> /dev/null)
+    while IFS='' read -r row; do
+      sanitized=$(iconv -f ASCII --byte-subst='\x{%02x}' <<< $row)
+      chunks=$(sed -E -e 's/.*code"><strong\>(.*)\<\/strong>.*amount">([0-9\.,]+).*buy">([0-9\.,-]+)<\/td>.*sell">([0-9\.,-]+)<\/td>.*/\1 \2 \3 \4/' -e 's/,/./g' <<< $sanitized)
 
-    for ((i=0; i<${lines}; i++)); do
-      row=$(xpath "(//frag/tr)[$((i + 1))]" <<< $data 2> /dev/null)
-      
-      currencyTarget=$(xpath "//tr/td[contains(@class,'code')]/strong/text()" <<< $row 2> /dev/null)
+      currencyTarget=$(cut -d " " -f 1 <<< $chunks)
       currencySource="CZK"
-      
-      if [ ! -z $currencyTarget ]; then
-        amount=$(xpath "//tr/td[contains(@class,'amount')]/text()" <<< $row 2> /dev/null)
-        sell=$(xpath "//tr/td[contains(@class,'sell')]/text()" <<< $row 2> /dev/null | tr -cd '[[:digit:]].,_-')
-        buy=$(xpath "//tr/td[contains(@class,'buy')]/text()" <<< $row 2> /dev/null | tr -cd '[[:digit:]].,_-')
 
-        sell=${sell//[,]/.}
-        buy=${buy//[,]/.}
+      amount=$(cut -d " " -f 2 <<< $chunks)
+      buy=$(cut -d " " -f 3 <<< $chunks | tr -cd '[[:digit:]]._-')
+      sell=$(cut -d " " -f 4 <<< $chunks | tr -cd '[[:digit:]]._-')
 
-        normalizedBuy=$(lua -e "print($sell/$amount)")
-        normalizedSell=$(lua -e "print($buy/$amount)")
-        
-        echo "1 $currencyTarget = sell: $normalizedSell $currencySource, buy: $normalizedBuy $currencySource"
-      fi
-    done
+      normalizedBuy=$(lua -e "print($sell/$amount)")
+      normalizedSell=$(lua -e "print($buy/$amount)")
+
+      echo "1 $currencyTarget = sell: $normalizedSell $currencySource, buy: $normalizedBuy $currencySource"
+    done <<< "$lines"
 
     exit 0
   else
