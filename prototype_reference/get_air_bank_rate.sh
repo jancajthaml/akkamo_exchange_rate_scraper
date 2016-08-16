@@ -28,7 +28,8 @@ if online; then
     lines=$(xpath 'count(//frag/tr)' <<< $data 2> /dev/null)
 
     for ((i=0; i<${lines}; i++)); do
-      row=$(xpath "(//frag/tr)[${i}]" <<< $data 2> /dev/null)
+      row=$(xpath "(//frag/tr)[$((i + 1))]" <<< $data 2> /dev/null)
+      
       currency=$(xpath "//tr/td[contains(@class,'code')]/strong/text()" <<< $row 2> /dev/null)
       
       if [ ! -z $currency ]; then

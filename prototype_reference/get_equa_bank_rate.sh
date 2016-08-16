@@ -16,7 +16,7 @@ request() {
   fi
 }
 
-syncDate="2016-8-11"
+syncDate="2016-8-16"
 
 if online; then
   response=$(request "https://www.equabank.cz/dulezite-dokumenty/kurzovni-listek?d=${syncDate}")
@@ -29,18 +29,16 @@ if online; then
     lines=$(xpath 'count(//frag/tr)' <<< $data 2> /dev/null)
 
     for ((i=0; i<${lines}; i++)); do
-      row=$(xpath "(//frag/tr)[${i}]" <<< $data 2> /dev/null)
+      row=$(xpath "(//frag/tr)[$((i + 1))]" <<< $data 2> /dev/null)
+      
       currency=$(xpath "//tr/td[contains(@class,'cell-currency')]/span/text()" <<< $row 2> /dev/null)
+      sell=$(xpath "//tr/td[contains(@class,'cell-sell')]/text()" <<< $row 2> /dev/null)
+      buy=$(xpath "//tr/td[contains(@class,'cell-buy')]/text()" <<< $row 2> /dev/null)
 
-      if [ ! -z $currency ]; then
-        sell=$(xpath "//tr/td[contains(@class,'cell-sell')]/text()" <<< $row 2> /dev/null)
-        buy=$(xpath "//tr/td[contains(@class,'cell-buy')]/text()" <<< $row 2> /dev/null)
+      sell=${sell//[,]/.}
+      buy=${buy//[,]/.}
 
-        sell=${sell//[,]/.}
-        buy=${buy//[,]/.}
-
-        echo "1 $currency = sell: $sell CZK, buy: $buy CZK"
-      fi
+      echo "1 $currency = sell: $sell CZK, buy: $buy CZK"
     done
 
     exit 0
