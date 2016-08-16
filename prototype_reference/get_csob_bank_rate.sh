@@ -9,12 +9,13 @@ if online; then
   response=$(request "https://www.csob.cz/portal/lide/produkty/kurzovni-listky/kurzovni-listek/-/date/kurzy.txt")
 
   if [ $? -eq 0 ]; then
-      dataDate=$(head -n 1 <<< "$response" | cut -d " " -f 1)
 
-      if [[ "$syncDate" != "$dataDate" ]]; then
-        echo "no data for $syncDate"
-        exit 1
-      fi
+    dataDate=$(head -n 1 <<< "$response" | cut -d " " -f 1)
+
+    if [[ "$syncDate" != "$dataDate" ]]; then
+      echo "no data for $syncDate"
+      exit 1
+    fi
       
     while IFS='' read -r LINE || [[ -n "$LINE" ]]; do
       #Země;Množství;Měna;Změna;Nákup;Prodej;Střed;Nákup;Prodej;Střed
@@ -31,7 +32,8 @@ if online; then
 
       echo "1 $currencyTarget = sell: $normalizedSell $currencySource, buy: $normalizedBuy $currencySource"
 
-    done <<< "$(awk 'NR > 4' <<< "$response")"
+    done <<< "$(tail -n +5 <<< "$response")"
+
     exit 0
   else
     echo "network unreachable, bailing out"

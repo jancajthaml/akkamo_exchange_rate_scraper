@@ -35,12 +35,13 @@ if online; then
       sell=${sell//[,]/.}
       buy=${buy//[,]/.}
 
-      normalizedBuy=$(lua -e "print($sell/$amount)")
-      normalizedSell=$(lua -e "print($buy/$amount)")
+      normalizedBuy=$(calculate "$sell / $amount")
+      normalizedSell=$(calculate "$buy / $amount")
 
       echo "1 $currencyTarget = sell: $normalizedSell $currencySource, buy: $normalizedBuy $currencySource"
 
-    done <<< "$(awk 'NR > 2' <<< "$response")"
+    done <<< "$(tail -n +3 <<< "$response")"
+
     exit 0
   else
     echo "network unreachable, bailing out"
