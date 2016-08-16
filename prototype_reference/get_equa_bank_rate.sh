@@ -1,4 +1,4 @@
-#!/bin/bash  
+#!/bin/bash
 
 online() {
   nc -z 8.8.8.8 53 >/dev/null 2>&1; [ $? -eq 0 ]
