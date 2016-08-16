@@ -1,20 +1,6 @@
 #!/bin/bash  
 
-online() {
-  nc -z 8.8.8.8 53 >/dev/null 2>&1; [ $? -eq 0 ]
-}
-
-request() {
-  res=$(curl -sw "%{http_code}" $1)
-  http_code="${res:${#res}-3}"
-
-  if [[ "$http_code" == "200" ]]; then
-    echo "${res:0:${#res}-3}"
-    return 0
-  else
-    return 1
-  fi
-}
+. common.sh
 
 syncDate="09.08.2016" # wanted rates for given rate
 #2016-08-09 reference date to check response
