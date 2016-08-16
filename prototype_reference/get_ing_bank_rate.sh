@@ -28,7 +28,7 @@ if online; then
         sell=${sell//[,]/.}
         buy=${buy//[,]/.}
 
-        echo "1 $currencySource = sell: $sell $currencyTarget, buy: $buy $currencyTarget"
+        echo "1 $currencySource = sell: $buy $currencyTarget, buy: $sell $currencyTarget"
       fi
       
     done
