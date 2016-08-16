@@ -26,7 +26,7 @@ read_dom () {
   return $RET
 }
 
-syncDate="2016-08-12"
+syncDate="2016-08-15"
 
 parse_dom () {
   if [[ $TAG_NAME = "Cube" ]] ; then

@@ -16,7 +16,7 @@ request() {
   fi
 }
 
-syncDate="2016-08-12"
+syncDate="2016-08-16"
 
 if online; then
   #check if syncDate is for today or historic here
