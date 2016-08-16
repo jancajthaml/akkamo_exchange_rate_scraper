@@ -41,7 +41,8 @@ if online; then
     #"Zemì","Jednotka","Mìna","Zmìna [%]", ,"Nákup","Prodej","Støed","Nákup","Prodej","Støed","Støed",
     while IFS='' read -r LINE || [[ -n "$LINE" ]]; do
       amount=$(awk -F"," '{print $2}' <<< $LINE | tr -d '"' | tr -d ' ')
-      currency=$(awk -F"," '{print $3}' <<< $LINE | tr -d '"' | tr -d ' ')
+      currencyTarget=$(awk -F"," '{print $3}' <<< $LINE | tr -d '"' | tr -d ' ')
+      currencySource="CZK"
 
       buy=$(awk -F"," '{print $6}' <<< $LINE | tr -d '"' | tr -d ' ')
       sell=$(awk -F"," '{print $7}' <<< $LINE | tr -d '"' | tr -d ' ')
@@ -51,7 +52,7 @@ if online; then
       normalizedBuy=$(lua -e "print($sell/$amount)")
       normalizedSell=$(lua -e "print($buy/$amount)")
 
-      echo "1 $currency = sell: $normalizedSell CZK, buy: $normalizedBuy CZK"
+      echo "1 $currencyTarget = sell: $normalizedSell $currencySource, buy: $normalizedBuy $currencySource"
 
     done <<< "$(awk 'NR > 2' <<< "$response")"
     exit 0

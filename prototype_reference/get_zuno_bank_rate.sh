@@ -34,8 +34,8 @@ if online; then
       currencySource=$(xpath "(//tr/td[1]/text()" <<< $row 2> /dev/null)
       currencyTarget=$(xpath "(//tr/td[2]/text()" <<< $row 2> /dev/null)
 
-      sell=$(xpath "(//tr/td[3]/text()" <<< $row 2> /dev/null)
-      buy=$(xpath "(//tr/td[5]/text()" <<< $row 2> /dev/null)
+      sell=$(xpath "(//tr/td[3]/text()" <<< $row 2> /dev/null | tr -cd '[[:digit:]].,_-')
+      buy=$(xpath "(//tr/td[5]/text()" <<< $row 2> /dev/null | tr -cd '[[:digit:]].,_-')
 
       sell=${sell//[,]/.}
       buy=${buy//[,]/.}

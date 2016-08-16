@@ -31,8 +31,8 @@ if online; then
       row=$(xpath "(//frag/tr)[$((i + 1))]" <<< $data 2> /dev/null)
       
       currency=$(xpath "//tr/td[contains(@class,'cell-currency')]/span/text()" <<< $row 2> /dev/null)
-      sell=$(xpath "//tr/td[contains(@class,'cell-sell')]/text()" <<< $row 2> /dev/null)
-      buy=$(xpath "//tr/td[contains(@class,'cell-buy')]/text()" <<< $row 2> /dev/null)
+      sell=$(xpath "//tr/td[contains(@class,'cell-sell')]/text()" <<< $row 2> /dev/null | tr -cd '[[:digit:]].,_-')
+      buy=$(xpath "//tr/td[contains(@class,'cell-buy')]/text()" <<< $row 2> /dev/null | tr -cd '[[:digit:]].,_-')
 
       sell=${sell//[,]/.}
       buy=${buy//[,]/.}

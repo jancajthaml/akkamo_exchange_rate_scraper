@@ -30,12 +30,13 @@ if online; then
     for ((i=0; i<${lines}; i++)); do
       row=$(xpath "(//frag/tr)[$((i + 1))]" <<< $data 2> /dev/null)
       
-      currency=$(xpath "//tr/td[contains(@class,'code')]/strong/text()" <<< $row 2> /dev/null)
+      currencyTarget=$(xpath "//tr/td[contains(@class,'code')]/strong/text()" <<< $row 2> /dev/null)
+      currencySource="CZK"
       
-      if [ ! -z $currency ]; then
+      if [ ! -z $currencyTarget ]; then
         amount=$(xpath "//tr/td[contains(@class,'amount')]/text()" <<< $row 2> /dev/null)
-        sell=$(xpath "//tr/td[contains(@class,'sell')]/text()" <<< $row 2> /dev/null)
-        buy=$(xpath "//tr/td[contains(@class,'buy')]/text()" <<< $row 2> /dev/null)
+        sell=$(xpath "//tr/td[contains(@class,'sell')]/text()" <<< $row 2> /dev/null | tr -cd '[[:digit:]].,_-')
+        buy=$(xpath "//tr/td[contains(@class,'buy')]/text()" <<< $row 2> /dev/null | tr -cd '[[:digit:]].,_-')
 
         sell=${sell//[,]/.}
         buy=${buy//[,]/.}
@@ -43,7 +44,7 @@ if online; then
         normalizedBuy=$(lua -e "print($sell/$amount)")
         normalizedSell=$(lua -e "print($buy/$amount)")
         
-        echo "1 $currency = sell: $normalizedSell CZK, buy: $normalizedBuy CZK"
+        echo "1 $currencyTarget = sell: $normalizedSell $currencySource, buy: $normalizedBuy $currencySource"
       fi
     done
 

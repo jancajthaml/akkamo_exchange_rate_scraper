@@ -34,7 +34,8 @@ if online; then
     while IFS='' read -r LINE || [[ -n "$LINE" ]]; do
       #Země;Množství;Měna;Změna;Nákup;Prodej;Střed;Nákup;Prodej;Střed
       amount=$(cut -d ";" -f 2 <<< $LINE)
-      currency=$(cut -d ";" -f 3 <<< $LINE)
+      currencyTarget=$(cut -d ";" -f 3 <<< $LINE)
+      currencySource="CZK"
       buy=$(cut -d ";" -f 5 <<< $LINE)
       sell=$(cut -d ";" -f 6 <<< $LINE)
       sell=${sell//[,]/.}
@@ -43,7 +44,7 @@ if online; then
       normalizedBuy=$(lua -e "print($sell/$amount)")
       normalizedSell=$(lua -e "print($buy/$amount)")
 
-      echo "1 $currency = sell: $normalizedSell CZK, buy: $normalizedBuy CZK"
+      echo "1 $currencyTarget = sell: $normalizedSell $currencySource, buy: $normalizedBuy $currencySource"
 
     done <<< "$(awk 'NR > 4' <<< "$response")"
     exit 0

@@ -31,12 +31,14 @@ if online; then
     fi
 
     while IFS='' read -r LINE || [[ -n "$LINE" ]]; do
-      AMOUNT=$(cut -d "|" -f 3 <<< $LINE)
-      CURRENCY=$(cut -d "|" -f 4 <<< $LINE)
-      RATE=$(cut -d "|" -f 5 <<< $LINE)
-      RATE=${RATE//[,]/.}
-      INVERSE_RATE=$(lua -e "print(1/$RATE*$AMOUNT)")
-      echo "1 CZK = $INVERSE_RATE $CURRENCY"
+      amount=$(cut -d "|" -f 3 <<< $LINE)
+      currencyTarget=$(cut -d "|" -f 4 <<< $LINE)
+      currencySource="CZK"
+      rate=$(cut -d "|" -f 5 <<< $LINE)
+      rate=${rate//[,]/.}
+      inverseAmount=$(lua -e "print(1/$rate*$amount)")
+      
+      echo "1 $currencySource = $inverseAmount $currencyTarget"
     done <<< "$(awk 'NR > 2' <<< "$response")"
 
     exit 0
