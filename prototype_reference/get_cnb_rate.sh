@@ -2,16 +2,15 @@
 
 . common.sh
 
-syncDate="08.08.2016"
+syncDate="12.08.2016"
 
 if online; then
   response=$(request "https://www.cnb.cz/cs/financni_trhy/devizovy_trh/kurzy_devizoveho_trhu/denni_kurz.txt?date=${syncDate}")
+  
   if [ $? -eq 0 ]; then
-    check=$(head -n 1 <<< "$response")
-    dataDate=$(cut -d " " -f 1 <<< $check)
-    dataId=$(cut -d "#" -f 2 <<< $check)
+    dataDate=$(head -n 1 <<< "$response" | cut -d " " -f 1)
 
-    if [[ ! "$syncDate" == "$dataDate" ]]; then
+    if [[ "$syncDate" != "$dataDate" ]]; then
       echo "no data for $syncDate"
       exit 1
     fi
@@ -20,11 +19,12 @@ if online; then
       amount=$(cut -d "|" -f 3 <<< $LINE)
       currencyTarget=$(cut -d "|" -f 4 <<< $LINE)
       currencySource="CZK"
-      rate=$(cut -d "|" -f 5 <<< $LINE)
-      rate=${rate//[,]/.}
-      inverseAmount=$(lua -e "print(1/$rate*$amount)")
+
+      rate=$(cut -d "|" -f 5 <<< $LINE | sed -e 's/,/./g')
+      normalizedRate=$(lua -e "print($rate/$amount)")
       
-      echo "1 $currencySource = $inverseAmount $currencyTarget"
+      echo "1 $currencyTarget = $normalizedRate $currencySource"
+
     done <<< "$(awk 'NR > 2' <<< "$response")"
 
     exit 0

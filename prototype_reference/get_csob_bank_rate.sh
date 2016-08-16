@@ -9,10 +9,9 @@ if online; then
   response=$(request "https://www.csob.cz/portal/lide/produkty/kurzovni-listky/kurzovni-listek/-/date/kurzy.txt")
 
   if [ $? -eq 0 ]; then
-      check=$(head -n 1 <<< "$response")
-      dataDate=$(cut -d " " -f 1 <<< $check)
+      dataDate=$(head -n 1 <<< "$response" | cut -d " " -f 1)
 
-      if [[ ! "$syncDate" == "$dataDate" ]]; then
+      if [[ "$syncDate" != "$dataDate" ]]; then
         echo "no data for $syncDate"
         exit 1
       fi

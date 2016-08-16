@@ -6,6 +6,7 @@ syncDate="2016-8-11"
 
 if online; then
   response=$(request "https://www.zuno.cz/pomoc/uzitecne-informace/kurzovni-listek/")
+
   if [ $? -eq 0 ]; then
     currencies_table=$(tr -d '\011\012\015' <<< $response | awk -v FS="(<table class=\"ztable irates\">|</table>)" '{print $2}')
     lines=$(pcregrep -o '<tr.*?<\/tr>' <<< "<frag>${currencies_table}</frag>" | sed -e ':a' -e 'N' -e '$!ba')

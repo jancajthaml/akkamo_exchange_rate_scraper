@@ -2,7 +2,7 @@
 
 . common.sh
 
-syncDate="9.8.2016"
+syncDate="12.8.2016"
 
 if online; then
   response=$(request "https://www.kb.cz/kurzovni-listek/cs/rl/index.x?format=xml&filterDate=${syncDate}")
