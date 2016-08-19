@@ -9,21 +9,20 @@ if online; then
 
   if [ $? -eq 0 ]; then
     currencies_table=$(tr -d '\011\012\015' <<< $response | awk -v FS="(<table class=\"ztable irates\">|</table>)" '{print $2}')
-    lines=$(pcregrep -o '<tr.*?<\/tr>' <<< "<frag>${currencies_table}</frag>" | sed -e ':a' -e 'N' -e '$!ba')
+    lines=$(pcregrep -o '<tr.*?<\/tr>' <<< "<frag>${currencies_table}</frag>" | sed -e ':a' -e 'N' -e '$!ba' | iconv -f ASCII --byte-subst='\x{%02x}' | tail -n +2)
 
     while IFS='' read -r row; do
-      sanitized=$(iconv -f ASCII --byte-subst='\x{%02x}' <<< $row)
-      chunks=$(sed -E -e 's/.*<td>(.*)<\/td>.*<td>(.*)<\/td>.*<td>(.*)<\/td>.*<td>(.*)<\/td>.*<td>(.*)<\/td>.*/\1 \2 \3 \5/' -e 's/,/./g' <<< $sanitized)
+      chunks=$(sed -E -e 's/.*<td>(.*)<\/td>.*<td>(.*)<\/td>.*<td>(.*)<\/td>.*<td>(.*)<\/td>.*<td>(.*)<\/td>.*/\1 \2 \3 \5/' -e 's/,/./g' <<< $row)
+      IFS=' ' read -r -a args <<< "$chunks"
 
-      currencySource=$(cut -d " " -f 1 <<< $chunks)
-      currencyTarget=$(cut -d " " -f 2 <<< $chunks)
+      currencySource=${args[0]}
+      currencyTarget=${args[1]}
 
-      sell=$(cut -d " " -f 3 <<< $chunks | tr -cd '[[:digit:]].,_-')
-      buy=$(cut -d " " -f 4 <<< $chunks | tr -cd '[[:digit:]].,_-')
+      sell=$(cleanNumber ${args[2]})
+      buy=$(cleanNumber ${args[3]})
 
       echo "1 $currencySource = sell: $sell $currencyTarget, buy: $buy $currencyTarget"
-
-    done <<< "$(tail -n +2 <<< "$lines")"
+    done <<< "$lines"
 
     exit 0
   else

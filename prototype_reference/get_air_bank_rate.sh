@@ -9,21 +9,19 @@ if online; then
   
   if [ $? -eq 0 ]; then
     currencies_table=$(tr -d '\011\012\015' <<< $response | awk -v FS="(<div class='contentAjax'>|</table>)" '{print $2}' | awk -v FS="(<tbody>|</tbody>)" '{print $2}')
-    lines=$(pcregrep -o '<tr>.*?<\/tr>' <<< "<frag>${currencies_table}</frag>" | sed -e ':a' -e 'N' -e '$!ba')
+    lines=$(pcregrep -o '<tr>.*?<\/tr>' <<< "${currencies_table}" | sed -e ':a' -e 'N' -e '$!ba' | iconv -f ASCII --byte-subst='\x{%02x}')
 
     while IFS='' read -r row; do
-      sanitized=$(iconv -f ASCII --byte-subst='\x{%02x}' <<< $row)
-      chunks=$(sed -E -e 's/.*code"><strong\>(.*)\<\/strong>.*amount">([0-9\.,]+).*buy">([0-9\.,-]+)<\/td>.*sell">([0-9\.,-]+)<\/td>.*/\1 \2 \3 \4/' -e 's/,/./g' <<< $sanitized)
+      chunks=$(sed -E -e 's/.*code"><strong\>(.*)\<\/strong>.*amount">([0-9\.,]+).*buy">([0-9\.,-]+)<\/td>.*sell">([0-9\.,-]+)<\/td>.*/\1 \2 \3 \4/' <<< $row)
+      IFS=' ' read -r -a args <<< "$chunks"
 
-      currencyTarget=${chunks%% *}
+      currencyTarget=${args[0]}
       currencySource="CZK"
 
-      amount=$(x=${chunks#* *} && echo ${x%% *})
-      buy=$(x=${chunks#* * } && echo ${x%% *})
-      sell=${chunks##* }
+      amount=${args[1]}
 
-      normalizedBuy=$(calculate "$sell / $amount")
-      normalizedSell=$(calculate "$buy / $amount")
+      normalizedBuy=$(calculate "${args[3]} / $amount")
+      normalizedSell=$(calculate "${args[2]} / $amount")
 
       echo "1 $currencyTarget = sell: $normalizedSell $currencySource, buy: $normalizedBuy $currencySource"
     done <<< "$lines"

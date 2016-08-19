@@ -2,7 +2,7 @@
 
 . common.sh
 
-syncDate="2016-08-16"
+syncDate="2016-08-19"
 
 #last 90days -> http://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml
 #from forever -> https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist.xml
@@ -20,12 +20,12 @@ if online; then
       exit 1
     fi
 
-    lines=$(sed -n "s/.*<Cube currency=\'\(.*\)\' rate=\'\(.*\)\'\/>.*/\1 \2/p" <<< "$response")
+    lines=$(sed -n "s/.*<Cube currency=\'\(.*\)\' rate=\'\(.*\)\'\/>.*/\1 \2/p" <<< "$response" | iconv -f ASCII --byte-subst='\x{%02x}')
 
     while IFS='' read -r row; do
       currencyTarget=${row%% *}
       currencySource="EUR"
-      rate=${row##* }
+      rate=$(cleanNumber ${row##* })
 
       echo "1 $currencySource = $rate $currencyTarget"
     done <<< "$lines"

@@ -14,33 +14,36 @@ if online; then
   year=${year#0}
 
   response=$(request "https://www.csas.cz/banka/portlets/exchangerates/current.do?csv=1&times=&event=current&day=${day}&month=${month}&year=${year}")
+  
   if [ $? -eq 0 ]; then
+    data=$(iconv -f ASCII --byte-subst='\x{%02x}' <<< "$response" | tr -d "\"" | tr -d ' ')
 
     #"Platnost od:","12.8.2016" ,""," "," ","Devizy"," "," ","Valuty"," "," ","ČNB",
-    check=$(head -n 1 <<< "$response")
-    dataDate=$(awk -F"," '{print $2}' <<< $check | tr -d '"' | tr -d ' ')
+    check=$(head -n 1 <<< "$data")
+    IFS=',' read -r -a args <<< "$check"
+
+    dataDate=${args[1]}
 
     if [[ ! "$syncDate" == "$dataDate" ]]; then
       echo "no data for $syncDate"
       exit 1
     fi
+
+    data=$(tail -n +3 <<< "$data")
+
     #"Zemì","Jednotka","Mìna","Zmìna [%]", ,"Nákup","Prodej","Støed","Nákup","Prodej","Støed","Støed",
     while IFS='' read -r LINE || [[ -n "$LINE" ]]; do
-      amount=$(awk -F"," '{print $2}' <<< $LINE | tr -d '"' | tr -d ' ')
-      currencyTarget=$(awk -F"," '{print $3}' <<< $LINE | tr -d '"' | tr -d ' ')
+      IFS=',' read -r -a args <<< "$LINE"
+
+      amount=${args[1]}
+      currencyTarget=${args[2]}
       currencySource="CZK"
 
-      buy=$(awk -F"," '{print $6}' <<< $LINE | tr -d '"' | tr -d ' ')
-      sell=$(awk -F"," '{print $7}' <<< $LINE | tr -d '"' | tr -d ' ')
-      sell=${sell//[,]/.}
-      buy=${buy//[,]/.}
-
-      normalizedBuy=$(calculate "$sell / $amount")
-      normalizedSell=$(calculate "$buy / $amount")
+      normalizedBuy=$(calculate "${args[6]} / $amount")
+      normalizedSell=$(calculate "${args[5]} / $amount")
 
       echo "1 $currencyTarget = sell: $normalizedSell $currencySource, buy: $normalizedBuy $currencySource"
-
-    done <<< "$(tail -n +3 <<< "$response")"
+    done <<< "$data"
 
     exit 0
   else

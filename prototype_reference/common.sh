@@ -33,8 +33,12 @@ function getCookie {
   fi
 }
 
+function cleanNumber {
+  sed -e 's/[^0-9.-]\+/ /g;s/^ \+\| \+$//g' -e 's/,/./g' <<< $1
+}
+
 # so far fastest and still precise mean to calculate something
 function calculate {
-  x=$(sed -e 's/,/./g' <<< "scale=35; $1")
+  x=$(cleanNumber "scale=35; $1")
   bc -l <<< $x | sed 's/^\./0./;s/0*$//'
 }

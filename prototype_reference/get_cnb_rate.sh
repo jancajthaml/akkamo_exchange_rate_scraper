@@ -16,17 +16,21 @@ if online; then
       exit 1
     fi
 
+    data=$(tail -n +3 <<< "$response" | iconv -f ASCII --byte-subst='\x{%02x}')
+
     while IFS='' read -r LINE || [[ -n "$LINE" ]]; do
-      currencyTarget=$(cut -d "|" -f 4 <<< $LINE)
+      IFS='|' read -r -a args <<< "$LINE"
+
+      currencyTarget=${args[3]}
       currencySource="CZK"
 
-      amount=$(cut -d "|" -f 3 <<< $LINE)
+      amount=$(cleanNumber ${args[2]})
+      rate=$(cleanNumber ${args[4]})
 
-      rate=$(cut -d "|" -f 5 <<< $LINE | sed -e 's/,/./g')
       normalizedRate=$(calculate "$rate / $amount")
       
       echo "1 $currencyTarget = $normalizedRate $currencySource"
-    done <<< "$(tail -n +3 <<< "$response")"
+    done <<< "$data"
 
     exit 0
   else
