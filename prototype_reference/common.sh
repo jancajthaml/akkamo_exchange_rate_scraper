@@ -34,7 +34,7 @@ function getCookie {
 }
 
 function cleanNumber {
-  sed -e 's/[^0-9.-]\+/ /g;s/^ \+\| \+$//g' -e 's/,/./g' <<< $1
+  sed -e 's/[^0-9.-]\+/ /g;s/^ \+\| \+$//g' -e 's/,/./g' -e 's/^\./0./;s/0*$//' <<< $1
 }
 
 # so far fastest and still precise mean to calculate something
