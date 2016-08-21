@@ -39,6 +39,6 @@ function cleanNumber {
 
 # so far fastest and still precise mean to calculate something
 function calculate {
-  x=$(cleanNumber "scale=35; $1")
-  bc -l <<< $x | sed 's/^\./0./;s/0*$//'
+  x=$(sed -e 's/[^0-9.-]\+/ /g;s/^ \+\| \+$//g' -e 's/,/./g' <<< $1)
+  bc -l <<< "scale=35; $x" | sed 's/^\./0./;s/0*$//'
 }
