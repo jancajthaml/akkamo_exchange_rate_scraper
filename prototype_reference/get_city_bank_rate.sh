@@ -4,15 +4,10 @@
 
 syncDate="19/08/2016"
 
-data=""
+#data=""
 
 function indexFor {
-  bc -l <<< "$1 + $2 * 16"
-}
-function valueAt {
-  index=$(bc -l <<< "$1 + $2 * 16")
-  #echo "$index"
-  echo ${data[$index]}
+  bc -l <<< "$1 + $2 * 15"
 }
 
 if online; then
@@ -20,18 +15,11 @@ if online; then
   response=$(request "http://www.citibank.cz/czech/gcb/personal_banking/data/rates.txt")
 
   if [ $? -eq 0 ]; then
-    
-    # insanely slow but meh...
-    row=0
-    while IFS='' read -r R; do
-      IFS=',' read -r -a args <<< "$R"
-      for ((col=0;col<${#args[@]};col++)) do
-        data[$(indexFor $col $row)]=${args[$col]}
-      done
-      let "row++"
-    done <<< "$(head -14 <<< "$response")"
+    flat=$(head -16 <<< $response | tr "\n\r" ",")
 
-    dataDate=$(valueAt 10 13)
+    IFS=',' read -r -a data <<< "$flat"
+
+    dataDate=${data[205]}  # 10 + 13 * 15
 
     if [[ "$syncDate" != "$dataDate" ]]; then
       echo "no data for $syncDate -> \"$dataDate\" != \"$syncDate\""
@@ -48,25 +36,25 @@ if online; then
     IFS=' ' read -r -a currencies <<< "X X USD GBP JPY CAD EUR CHF HUF AUD DKK PLN SEK"
     IFS=' ' read -r -a amounts <<< "X X 1 1 100 1 1 1 100 1 1 1 1"
 
-    for ((row=2;row<13;row++)) do
+    for ((row=2;row<=12;row++)) do
 
       #devizy nakup/prodej
-      sell=$(valueAt 9 $row)
-      buy=$(valueAt 10 $row)
+      sellDeviza=${data[$(indexFor 9 $row)]}
+      buyDeviza=${data[$(indexFor 10 $row)]}
 
       #valuty nakup/prodej
-      #rowDataC=$(valueAt 11 $row)
-      #rowDataD=$(valueAt 12 $row)
+      #sellValuta=${data[$(indexFor 11 $row)]}
+      #buyValuta=${data[$(indexFor 12 $row)]}
 
       currencyTarget=${currencies[$row]}
       currencySource="CZK"
 
       amount=${amounts[$row]}
 
-      normalizedBuy=$(calculate "$buy / $amount")
-      normalizedSell=$(calculate "$sell / $amount")
+      normalizedBuyDeviza=$(calculate "$buyDeviza / $amount")
+      normalizedSellDeviza=$(calculate "$sellDeviza / $amount")
 
-      echo "1 $currencyTarget = sell: $normalizedSell $currencySource, buy: $normalizedBuy $currencySource"
+      echo "1 $currencyTarget = sell: $normalizedSellDeviza $currencySource, buy: $normalizedBuyDeviza $currencySource"
     done
     exit 0
   else
