@@ -43,8 +43,8 @@ if online; then
       buyDeviza=${data[$(indexFor 10 $row)]}
 
       #valuty nakup/prodej
-      #sellValuta=${data[$(indexFor 11 $row)]}
-      #buyValuta=${data[$(indexFor 12 $row)]}
+      sellValuta=${data[$(indexFor 11 $row)]}
+      buyValuta=${data[$(indexFor 12 $row)]}
 
       currencyTarget=${currencies[$row]}
       currencySource="CZK"
@@ -54,7 +54,12 @@ if online; then
       normalizedBuyDeviza=$(calculate "$buyDeviza / $amount")
       normalizedSellDeviza=$(calculate "$sellDeviza / $amount")
 
-      echo "1 $currencyTarget = sell: $normalizedSellDeviza $currencySource, buy: $normalizedBuyDeviza $currencySource"
+      normalizedBuyValuta=$(calculate "$buyValuta / $amount")
+      normalizedSellValuta=$(calculate "$sellValuta / $amount")
+
+      normalizedAmount="1"
+
+      echo "$normalizedAmount $currencyTarget >> VIRTUAL_RATE { sell: $normalizedSellDeviza $currencySource, buy: $normalizedBuyDeviza $currencySource }, CASH_RATE { sell: $normalizedSellValuta $currencySource, buy: $normalizedBuyValuta $currencySource }, DATE: { $syncDate }"
     done
     exit 0
   else
