@@ -20,6 +20,18 @@ function request {
   fi
 }
 
+function requestPOST {
+  res=$(curl -sw "%{http_code}" -X POST $1)
+  http_code="${res:${#res}-3}"
+
+  if [[ "$http_code" == "200" ]]; then
+    echo "${res:0:${#res}-3}"
+    return 0
+  else
+    return 1
+  fi
+}
+
 # performs HTTP header-only GET request to $1 and retrieves http-only header
 # for cookie set
 function getCookie {
