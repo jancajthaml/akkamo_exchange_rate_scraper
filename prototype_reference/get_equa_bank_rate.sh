@@ -17,10 +17,12 @@ if online; then
       currencyTarget=${args[0]}
       currencySource="CZK"
 
-      buy=$(cleanNumber ${args[1]})
-      sell=$(cleanNumber ${args[2]})
+      normalizedBuyDeviza=$(cleanNumber ${args[2]})
+      normalizedSellDeviza=$(cleanNumber ${args[1]})
 
-      echo "1 $currencyTarget = sell: $buy $currencySource, buy: $sell $currencySource"
+      normalizedAmount="1"
+
+      echo "$normalizedAmount $currencyTarget >> VIRTUAL_RATE { sell: $normalizedSellDeviza $currencySource, buy: $normalizedBuyDeviza $currencySource }, DATE: { $syncDate }"
     done <<< "$lines"
 
     exit 0

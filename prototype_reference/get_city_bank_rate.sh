@@ -2,9 +2,7 @@
 
 . common.sh
 
-syncDate="19/08/2016"
-
-#data=""
+syncDate="22/08/2016"
 
 function indexFor {
   bc -l <<< "$1 + $2 * 15"
@@ -37,25 +35,18 @@ if online; then
     IFS=' ' read -r -a amounts <<< "X X 1 1 100 1 1 1 100 1 1 1 1"
 
     for ((row=2;row<=12;row++)) do
-
-      #devizy nakup/prodej
-      sellDeviza=${data[$(indexFor 9 $row)]}
-      buyDeviza=${data[$(indexFor 10 $row)]}
-
-      #valuty nakup/prodej
-      sellValuta=${data[$(indexFor 11 $row)]}
-      buyValuta=${data[$(indexFor 12 $row)]}
-
       currencyTarget=${currencies[$row]}
       currencySource="CZK"
 
       amount=${amounts[$row]}
 
-      normalizedBuyDeviza=$(calculate "$buyDeviza / $amount")
-      normalizedSellDeviza=$(calculate "$sellDeviza / $amount")
+      #devizy nakup/prodej
+      normalizedBuyDeviza=$(calculate "${data[$(indexFor 10 $row)]} / $amount")
+      normalizedSellDeviza=$(calculate "${data[$(indexFor 9 $row)]} / $amount")
 
-      normalizedBuyValuta=$(calculate "$buyValuta / $amount")
-      normalizedSellValuta=$(calculate "$sellValuta / $amount")
+      #valuty nakup/prodej
+      normalizedBuyValuta=$(calculate "${data[$(indexFor 12 $row)]} / $amount")
+      normalizedSellValuta=$(calculate "${data[$(indexFor 11 $row)]} / $amount")
 
       normalizedAmount="1"
 

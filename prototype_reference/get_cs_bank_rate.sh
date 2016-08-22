@@ -14,12 +14,13 @@ if online; then
   year=${year#0}
 
   response=$(request "https://www.csas.cz/banka/portlets/exchangerates/current.do?csv=1&times=&event=current&day=${day}&month=${month}&year=${year}")
-  
+
   if [ $? -eq 0 ]; then
     data=$(iconv -f ASCII --byte-subst='\x{%02x}' <<< "$response" | tr -d "\"" | tr -d ' ')
 
     #"Platnost od:","12.8.2016" ,""," "," ","Devizy"," "," ","Valuty"," "," ","ČNB",
     check=$(head -n 1 <<< "$data")
+    cols=$(tr -dc ',' <<< "$check" | wc -c | sed -e "s/ //g")
     IFS=',' read -r -a args <<< "$check"
 
     dataDate=${args[1]}
@@ -30,20 +31,39 @@ if online; then
     fi
 
     data=$(tail -n +3 <<< "$data")
+    flat=$(tr -d "\n\r" <<< "$data")
+    rows=$(wc -l <<< "$data" | sed -e "s/ //g")
 
-    #"Zemì","Jednotka","Mìna","Zmìna [%]", ,"Nákup","Prodej","Støed","Nákup","Prodej","Støed","Støed",
-    while IFS='' read -r LINE || [[ -n "$LINE" ]]; do
-      IFS=',' read -r -a args <<< "$LINE"
+    IFS=',' read -r -a args <<< "$flat"
 
-      amount=${args[1]}
-      currencyTarget=${args[2]}
+    for ((row=0;row<$rows;row++)) do
+      offset=$(bc -l <<< "$row * $cols")
+
+      currencyTarget=${args[$((offset + 2))]}
       currencySource="CZK"
 
-      normalizedBuy=$(calculate "${args[6]} / $amount")
-      normalizedSell=$(calculate "${args[5]} / $amount")
+      amount=${args[$((offset + 1))]}
 
-      echo "1 $currencyTarget = sell: $normalizedSell $currencySource, buy: $normalizedBuy $currencySource"
-    done <<< "$data"
+      normalizedAmount="1"
+
+      #devizy nakup/prodej
+      normalizedBuyDeviza=$(calculate "${args[$((offset + 6))]} / $amount")
+      normalizedSellDeviza=$(calculate "${args[$((offset + 5))]} / $amount")
+
+      #valuty nakup/prodej
+      buyValuta=${args[$((offset + 9))]}
+      sellValuta=${args[$((offset + 8))]}
+
+      if [[ "$buyValuta" == "-" || "$sellValuta" == "-" ]]; then
+        echo "$normalizedAmount $currencyTarget >> VIRTUAL_RATE { sell: $normalizedSellDeviza $currencySource, buy: $normalizedBuyDeviza $currencySource }, DATE: { $syncDate }"
+      else
+        normalizedBuyValuta=$(calculate "$buyValuta / $amount")
+        normalizedSellValuta=$(calculate "$sellValuta / $amount")
+
+        echo "$normalizedAmount $currencyTarget >> VIRTUAL_RATE { sell: $normalizedSellDeviza $currencySource, buy: $normalizedBuyDeviza $currencySource }, CASH_RATE { sell: $normalizedSellValuta $currencySource, buy: $normalizedBuyValuta $currencySource }, DATE: { $syncDate }"
+      fi
+
+    done
 
     exit 0
   else

@@ -18,10 +18,12 @@ if online; then
       currencySource=$(cut -d "/" -f 2 <<< $currency)
       currencyTarget=$(cut -d "/" -f 1 <<< $currency)
 
-      buy=$(cleanNumber ${args[1]})
-      sell=$(cleanNumber ${args[2]})
+      normalizedBuyDeviza=$(cleanNumber ${args[2]})
+      normalizedSellDeviza=$(cleanNumber ${args[1]})
 
-      echo "1 $currencyTarget = sell: $buy $currencySource, buy: $sell $currencySource"
+      normalizedAmount="1"
+
+      echo "$normalizedAmount $currencyTarget >> VIRTUAL_RATE { sell: $normalizedSellDeviza $currencySource, buy: $normalizedBuyDeviza $currencySource }, DATE: { $syncDate }"
     done <<< "$(tail -n +3 <<< "$lines")"
 
     exit 0
