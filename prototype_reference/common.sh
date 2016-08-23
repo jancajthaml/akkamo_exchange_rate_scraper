@@ -68,6 +68,7 @@ function hget {
 # extract lines from multiline string ($1) between from start ($2) and
 # from end ($3). Example getLinesBetween "ABCDEFGHIJK" 2 3 -> "CDEFGH"
 function getLinesBetween {
+  # $2 - 2
   lines=$(wc -l <<< "$1" | sed -e "s/ //g")
   offset=$((${lines} - ${3}))
   sed -n "${2},${offset}p" <<< "$1"

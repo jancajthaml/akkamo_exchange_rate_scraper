@@ -26,7 +26,6 @@ if online; then
       normalizedAmount="1"
 
       echo "$normalizedAmount $currencyTarget >> VIRTUAL_RATE { sell: $normalizedSellDeviza $currencySource, buy: $normalizedBuyDeviza $currencySource }, DATE: { $syncDate }"
-
     done <<< "$lines"
 
     exit 0
