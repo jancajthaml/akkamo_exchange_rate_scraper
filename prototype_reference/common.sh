@@ -54,3 +54,22 @@ function calculate {
   x=$(sed -e 's/[^0-9.-]\+/ /g;s/^ \+\| \+$//g' -e 's/,/./g' <<< $1)
   bc -l <<< "scale=35; $x" | sed 's/^\./0./;s/0*$//'
 }
+
+# hash map put key($1) value($2)
+function hput {
+  eval hash"$1"='$2'
+}
+
+# hash map get key($1)
+function hget {
+  eval echo '${hash'"$1"'#hash}'
+}
+
+# extract lines from multiline string ($1) between from start ($2) and
+# from end ($3). Example getLinesBetween "ABCDEFGHIJK" 2 3 -> "CDEFGH"
+function getLinesBetween {
+  lines=$(wc -l <<< "$1" | sed -e "s/ //g")
+  offset=$((${lines} - ${3}))
+  sed -n "${2},${offset}p" <<< "$1"
+}
+
