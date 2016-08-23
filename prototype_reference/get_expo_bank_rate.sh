@@ -87,15 +87,6 @@ except Exception:
 
           echo "$normalizedAmount $currencyTarget >> VIRTUAL_RATE { sell: $normalizedSellDeviza $currencySource, buy: $normalizedBuyDeviza $currencySource }, CASH_RATE { sell: $normalizedSellValuta $currencySource, buy: $normalizedBuyValuta $currencySource }, DATE: { $syncDate }"
         fi
-
-        #amount=${args[1]}
-
-        #normalizedBuyDeviza=$(calculate "${args[3]} / $amount")
-        #normalizedSellDeviza=$(calculate "${args[2]} / $amount")
-
-        #normalizedAmount="1"
-
-        #echo "$normalizedAmount $currencyTarget >> VIRTUAL_RATE { sell: $normalizedSellDeviza $currencySource, buy: $normalizedBuyDeviza $currencySource }, DATE: { $syncDate }"
       done <<< "$lines"
 
       exit 0
@@ -103,8 +94,6 @@ except Exception:
       echo "network unreachable, bailing out"
       exit 1
     fi
-
-    exit 0
   else
     echo "network unreachable, bailing out"
     exit 1

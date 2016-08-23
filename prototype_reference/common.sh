@@ -20,6 +20,16 @@ function request {
   fi
 }
 
+function download {
+  temp=$(mktemp "${TMPDIR:-/tmp}/snip.XXXXXXXXX")
+  if curl -s --fail $1 > $temp; then
+    echo $temp
+    return 0
+  else
+    return 1
+  fi
+}
+
 function requestPOST {
   res=$(curl -sw "%{http_code}" -X POST $1)
   http_code="${res:${#res}-3}"
@@ -74,3 +84,7 @@ function getLinesBetween {
   sed -n "${2},${offset}p" <<< "$1"
 }
 
+# check whenver $1 is installed in system
+function isInstalled {
+    type "$1" &> /dev/null;
+}
