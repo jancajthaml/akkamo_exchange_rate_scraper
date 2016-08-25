@@ -4,6 +4,8 @@ import akka.event.LoggingAdapter
 import eu.akkamo
 import eu.akkamo.{Context, Dependency, LoggingAdapterFactory, Res}
 
+//import com.github.jancajthaml.number.Real
+
 import scala.util.Try
 
 class ExchangeScraperModule extends akkamo.Module with akkamo.Initializable {
