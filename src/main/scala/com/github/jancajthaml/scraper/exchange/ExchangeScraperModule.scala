@@ -1,25 +1,44 @@
 package com.github.jancajthaml.scraper.exchange
 
+import akka.actor.{ActorRef, ActorSystem}
 import akka.event.LoggingAdapter
 import eu.akkamo
-import eu.akkamo.{Context, Dependency, LoggingAdapterFactory, Res}
+import eu.akkamo._
+import eu.akkamo.mongo.{ReactiveMongoApi, ReactiveMongoModule}
+
+import scala.concurrent.ExecutionContextExecutor
+import scala.concurrent.duration._
+
+import com.github.jancajthaml.scraper.rates._
 
 //import com.github.jancajthaml.number.Real
-//import com.github.jancajthaml.csv.{read => csv}
 
 import scala.util.Try
 
-class ExchangeScraperModule extends akkamo.Module with akkamo.Initializable {
+class ExchangeRateScraperModule extends akkamo.Module with akkamo.Initializable with akkamo.Runnable {
 
   override def dependencies(dependencies: Dependency): Dependency = dependencies
-    .&&[akkamo.LogModule]
-
+      .&&[akkamo.AkkaModule].&&[akkamo.LogModule].&&[ReactiveMongoModule]
 
   override def initialize(ctx: Context): Res[Context] = Try {
     // inject dependencies
     val log: LoggingAdapter = ctx.get[LoggingAdapterFactory] apply getClass
 
     log.info("Initializing Exchange Scraper module")
+
+    ctx
+  }
+
+  override def run(ctx: Context): Res[Context] = Try {
+
+    //this will be somewhat shared and only keys would change for each Actor in utils folder
+    val mongo: ReactiveMongoApi = ctx.get[ReactiveMongoApi](Keys.CityBankRate)
+    val system: ActorSystem = ctx.get[ActorSystem](Keys.CityBankRate)
+
+    implicit val eCtx: ExecutionContextExecutor = system.dispatcher
+
+    val scraperActor: ActorRef = system.actorOf(CityBankActor.props())
+    system.scheduler.schedule(5.seconds, 30.seconds, scraperActor, CityBankActor.Fetch)
 
     ctx
   }

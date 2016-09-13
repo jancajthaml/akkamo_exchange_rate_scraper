@@ -1,4 +1,4 @@
-package com.github.jancajthaml.scraper.utils
+package com.github.jancajthaml.scraper.rates
 
 /*
 

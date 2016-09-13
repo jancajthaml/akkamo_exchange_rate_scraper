@@ -1,4 +1,57 @@
-package com.github.jancajthaml.scraper.utils
+package com.github.jancajthaml.scraper.rates
+
+import akka.actor.{Actor, ActorLogging, ActorSystem, Props}
+import akka.http.scaladsl.Http
+import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse}
+  import akka.stream.scaladsl.Sink
+
+import akka.http.scaladsl.unmarshalling.Unmarshal
+import akka.http.scaladsl.unmarshalling._
+import akka.stream.ActorMaterializer
+import de.heikoseeberger.akkahttpplayjson.PlayJsonSupport
+import play.api.libs.json.JsValue
+
+import scala.concurrent.{ExecutionContextExecutor, Future}
+
+case class PlainText(status: String, error_msg: String)
+
+class CityBankActor() extends Actor with ActorLogging with PlayJsonSupport {
+
+  private implicit val as: ActorSystem = context.system
+  private implicit val eCtx: ExecutionContextExecutor = as.dispatcher
+  private implicit val materializer = ActorMaterializer()
+
+  // TODO parametrize hardcoded date parameters
+  private val ratesUri: String = s"http://www.citibank.cz/czech/gcb/personal_banking/data/rates.txt"
+
+  import CityBankActor.Fetch
+  import scala.concurrent.duration._
+
+  override def receive: Receive = {
+    case Fetch =>
+      log.info("Performing fetch operation...")
+      Http().singleRequest(HttpRequest(
+        method = HttpMethods.GET,
+        uri = ratesUri
+      )) flatMap processResponse
+  }
+
+  private def processResponse(response: HttpResponse): Future[Unit] = {
+    Unmarshal(response.entity).to[String] map { raw =>
+      println("RESPONSE RECEIVED: " + raw)
+    }
+
+    Future.successful()
+  }
+}
+
+object CityBankActor {
+  def props(): Props = Props(new CityBankActor())
+
+  case object Fetch
+
+}
+
 
 /*
 

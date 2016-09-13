@@ -11,6 +11,9 @@ lazy val root = (project in file(".")).settings(
   name := "exchange-scraper",
   mainClass in Compile := Some("eu.akkamo.Main"),
   libraryDependencies ++= Seq(
-    "eu.akkamo" %% "akkamo" % "1.0.2"
+    "eu.akkamo" %% "akkamo" % Versions.akkamo,
+    "eu.akkamo" %% "akkamo-akka-http" % Versions.akkamo,
+    "eu.akkamo" %% "akkamo-reactivemongo" % Versions.akkamo,
+    "de.heikoseeberger" %% "akka-http-play-json" % "1.10.0"
   )
 ).dependsOn(numbers).dependsOn(csv).enablePlugins(AkkamoSbtPlugin)
