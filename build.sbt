@@ -13,7 +13,6 @@ lazy val root = (project in file(".")).settings(
   libraryDependencies ++= Seq(
     "eu.akkamo" %% "akkamo" % Versions.akkamo,
     "eu.akkamo" %% "akkamo-akka-http" % Versions.akkamo,
-    "eu.akkamo" %% "akkamo-reactivemongo" % Versions.akkamo,
-    "de.heikoseeberger" %% "akka-http-play-json" % "1.10.0"
+    "eu.akkamo" %% "akkamo-reactivemongo" % Versions.akkamo
   )
 ).dependsOn(numbers).dependsOn(csv).enablePlugins(AkkamoSbtPlugin)

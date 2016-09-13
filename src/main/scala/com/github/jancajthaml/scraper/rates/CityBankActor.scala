@@ -8,14 +8,13 @@ import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse}
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.http.scaladsl.unmarshalling._
 import akka.stream.ActorMaterializer
-import de.heikoseeberger.akkahttpplayjson.PlayJsonSupport
 import play.api.libs.json.JsValue
 
 import scala.concurrent.{ExecutionContextExecutor, Future}
 
 case class PlainText(status: String, error_msg: String)
 
-class CityBankActor() extends Actor with ActorLogging with PlayJsonSupport {
+class CityBankActor() extends Actor with ActorLogging {
 
   private implicit val as: ActorSystem = context.system
   private implicit val eCtx: ExecutionContextExecutor = as.dispatcher
