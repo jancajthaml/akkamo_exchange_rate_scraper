@@ -1,6 +1,6 @@
 package com.github.jancajthaml.scraper.exchange
 
 object Keys {
-  val CityBankRate: String = "scrapper-rates-citybank"
-  val CzechNationalBankRate: String = "scrapper-rates-cnb"
+  val cityBankRate: String = "scrapper-rates-citybank"
+  val czechNationalBankRate: String = "scrapper-rates-cnb"
 }

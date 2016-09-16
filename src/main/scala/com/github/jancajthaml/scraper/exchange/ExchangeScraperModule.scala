@@ -32,8 +32,8 @@ class ExchangeRateScraperModule extends akkamo.Module with akkamo.Initializable 
   override def run(ctx: Context): Res[Context] = Try {
 
     //this will be somewhat shared and only keys would change for each Actor in utils folder
-    val mongo: ReactiveMongoApi = ctx.get[ReactiveMongoApi](Keys.CityBankRate)
-    val system: ActorSystem = ctx.get[ActorSystem](Keys.CityBankRate)
+    val mongo: ReactiveMongoApi = ctx.get[ReactiveMongoApi](Keys.cityBankRate)
+    val system: ActorSystem = ctx.get[ActorSystem](Keys.cityBankRate)
 
     implicit val eCtx: ExecutionContextExecutor = system.dispatcher
 

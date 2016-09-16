@@ -22,10 +22,8 @@ class CityBankActor() extends Actor with ActorLogging {
   // TODO parametrize hardcoded date parameters
   private val ratesUri: String = s"http://www.citibank.cz/czech/gcb/personal_banking/data/rates.txt"
 
-  import CityBankActor.Fetch
-
   override def receive: Receive = {
-    case Fetch =>
+    case CityBankActor.Fetch =>
       log.info("Performing fetch operation...")
       Http().singleRequest(HttpRequest(
         method = HttpMethods.GET,
