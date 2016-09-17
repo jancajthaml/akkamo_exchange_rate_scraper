@@ -35,12 +35,12 @@ class CzechoSlovakBankActor() extends Actor with ActorLogging {
     Unmarshal(response.entity).to[String] map { raw =>
       //@info duplicate ordered keys
       val data = csv(raw, ',', Map(
-        "Jednotka" -> "AM"
+        "Jednotka" -> "AM",
         "Měna" -> "CR", //currency
         "Nákup" -> "BD", //buy deviza
         "Prodej" -> "SD", //sell deviza
         "Nákup" -> "BV", //buy valuta
-        "Prodej" -> "SV", //sell valuta
+        "Prodej" -> "SV" //sell valuta
       )).drop(1)
 
       println("\n##### CS BANK RATES:")
