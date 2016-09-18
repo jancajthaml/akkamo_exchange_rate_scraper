@@ -34,21 +34,28 @@ class CityBankActor() extends Actor with ActorLogging {
   private def processResponse(response: HttpResponse): Future[Unit] = {
     Unmarshal(response.entity).to[String] map { raw =>
       val data = csv(raw, ',', Map(
-        "COL9" -> "BD", //buy deviza
-        "COL10" -> "SD", //sell deviza
-        "COL11" -> "BV", //buy valuta
-        "COL12" -> "SV", //sell valuta
-        "COL14" -> "CR" //currency
-      )).drop(3).take(9)
+        10 -> "BD", //buy deviza
+        11 -> "SD", //sell deviza
+        12 -> "BV", //buy valuta
+        13 -> "SV", //sell valuta
+        15 -> "CR" //currency
+      )).filterNot(_.isEmpty).drop(2).dropRight(1)
+
+      val date = csv(raw, ',', Map(
+        11 -> "Date" //created at
+      )).filterNot(_.isEmpty).takeRight(1)
 
       println("\n##### CITY BANK RATES:")
 
       for (i <- data.toSeq) {
         println(i.map(pair => s"${pair._1}=${pair._2}").mkString("",", ",""))
       }
+      for (i <- date.toSeq) {
+        println(i.map(pair => s"${pair._1}=${pair._2}").mkString("",", ",""))
+      }
     }
 
-    Future.successful()
+    Future.successful(())
   }
 }
 

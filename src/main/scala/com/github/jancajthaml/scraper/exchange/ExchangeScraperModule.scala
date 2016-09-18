@@ -39,15 +39,18 @@ class ExchangeRateScraperModule extends akkamo.Module with akkamo.Initializable 
 /*
     val cityBankActor: ActorRef = system.actorOf(CityBankActor.props())
     system.scheduler.schedule(5.seconds, 1.seconds, cityBankActor, CityBankActor.Fetch)
-
-    val cnBankActor: ActorRef = system.actorOf(CzechNationalBankActor.props())
-    system.scheduler.schedule(5.seconds, 1.seconds, cnBankActor, CzechNationalBankActor.Fetch)
 */
-    val csBankActor: ActorRef = system.actorOf(CzechoSlovakBankActor.props())
-    system.scheduler.schedule(5.seconds, 1.seconds, csBankActor, CzechoSlovakBankActor.Fetch)
 /*
-    val csobBankActor: ActorRef = system.actorOf(CzechoMoravianMorgadgeBankActor.props())
-    system.scheduler.schedule(5.seconds, 1.seconds, csobBankActor, CzechoMoravianMorgadgeBankActor.Fetch)
+    val cnBankActor: ActorRef = system.actorOf(CNBActor.props())
+    system.scheduler.schedule(5.seconds, 1.seconds, cnBankActor, CNBActor.Fetch)
+*/
+/*
+    val csBankActor: ActorRef = system.actorOf(CSActor.props())
+    system.scheduler.schedule(5.seconds, 1.seconds, csBankActor, CSActor.Fetch)
+*/
+/*
+    val csobBankActor: ActorRef = system.actorOf(CSOBActorActor.props())
+    system.scheduler.schedule(5.seconds, 1.seconds, csobBankActor, CSOBActorActor.Fetch)
 */
     ctx
   }

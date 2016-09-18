@@ -13,17 +13,17 @@ import com.github.jancajthaml.csv.{read => csv}
 
 import scala.concurrent.{ExecutionContextExecutor, Future}
 
-class CzechoMoravianMorgadgeBankActor() extends Actor with ActorLogging {
+class CNBActor() extends Actor with ActorLogging {
 
   private implicit val as: ActorSystem = context.system
   private implicit val eCtx: ExecutionContextExecutor = as.dispatcher
   private implicit val materializer = ActorMaterializer()
 
   // TODO parametrize hardcoded date parameters
-  private val ratesUri: String = s"https://www.csob.cz/portal/lide/produkty/kurzovni-listky/kurzovni-listek/-/date/kurzy.txt"
+  private val ratesUri: String = s"https://www.cnb.cz/cs/financni_trhy/devizovy_trh/kurzy_devizoveho_trhu/denni_kurz.txt?date=12.08.2016"
 
   override def receive: Receive = {
-    case CzechoMoravianMorgadgeBankActor.Fetch =>
+    case CNBActor.Fetch =>
       log.info("Performing fetch operation...")
       Http().singleRequest(HttpRequest(
         method = HttpMethods.GET,
@@ -33,28 +33,29 @@ class CzechoMoravianMorgadgeBankActor() extends Actor with ActorLogging {
 
   private def processResponse(response: HttpResponse): Future[Unit] = {
     Unmarshal(response.entity).to[String] map { raw =>
-      val data = csv(raw, ';', Map(
-        "Množství" -> "AM", //amount
-        "Měna" -> "CR", //currency
-        "Nákup" -> "BD", //buy deviza
-        "Prodej" -> "SD", //sell seviza
-        "Nákup" -> "BV", //buy valuta
-        "Prodej" -> "SV" //sell valuta
-      ))//.drop(3).take(9)
+      //val date = raw.split("[\\r\\n]+").take(1)
+      //println(date)
 
-      println("\n##### CSOB BANK RATES:")
+      val data = csv(raw, '|', Map(
+        3 -> "AM", //amount
+        5 -> "RT", //rate deviza
+        4 -> "CR" //currency
+      )).drop(1)
+
+      println("\n##### CNB BANK RATES:")
+      
 
       for (i <- data.toSeq) {
         println(i.map(pair => s"${pair._1}=${pair._2}").mkString("",", ",""))
       }
     }
 
-    Future.successful()
+    Future.successful(())
   }
 }
 
-object CzechoMoravianMorgadgeBankActor {
-  def props(): Props = Props(new CzechoMoravianMorgadgeBankActor())
+object CNBActor {
+  def props(): Props = Props(new CNBActor())
 
   case object Fetch
 
