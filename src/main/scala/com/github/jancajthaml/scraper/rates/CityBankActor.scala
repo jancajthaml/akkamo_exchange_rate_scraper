@@ -39,11 +39,11 @@ class CityBankActor() extends Actor with ActorLogging {
         12 -> "BV", //buy valuta
         13 -> "SV", //sell valuta
         15 -> "CR" //currency
-      )).filterNot(_.isEmpty).drop(2).dropRight(1)
+      )).drop(2).dropRight(1)
 
       val date = csv(raw, ',', Map(
         11 -> "Date" //created at
-      )).filterNot(_.isEmpty).takeRight(1)
+      )).takeRight(1)
 
       println("\n##### CITY BANK RATES:")
 
